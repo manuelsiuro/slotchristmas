@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Christmas Slot</string>
+    <string name="spin">SPIN!</string>
+    <string name="game_over">Game Over!</string>
+    <string name="play_again">Play Again</string>
+    <string name="chooser_label">GIVES</string>
+    <string name="receiver_label">RECEIVES</string>
+    <string name="gifts_label">GIFTS</string>
+    <string name="mute">Mute</string>
+    <string name="unmute">Unmute</string>
+    <string name="remove_receiver">Remove</string>
+    <string name="receivers_title">Receivers</string>
+    <string name="result_title">Result</string>
+</resources>

@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Christmas Theme Colors -->
+    <color name="christmas_red">#C41E3A</color>
+    <color name="christmas_green">#228B22</color>
+    <color name="christmas_gold">#D4AF37</color>
+    <color name="christmas_white">#FFFAFA</color>
+    <color name="christmas_dark_green">#0B3D0B</color>
+    <color name="christmas_dark_red">#8B0000</color>
+
+    <!-- UI Colors -->
+    <color name="background_overlay">#80000000</color>
+    <color name="reel_background">#4D000000</color>
+    <color name="selection_glow">#FFD700</color>
+    <color name="text_primary">#FFFFFF</color>
+    <color name="text_secondary">#E0E0E0</color>
+
+    <!-- Particle Colors -->
+    <color name="particle_red">#FF0000</color>
+    <color name="particle_green">#00FF00</color>
+    <color name="particle_gold">#FFD700</color>
+    <color name="particle_white">#FFFFFF</color>
+</resources>
