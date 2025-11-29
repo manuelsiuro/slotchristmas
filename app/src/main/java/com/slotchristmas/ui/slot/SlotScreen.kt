@@ -47,16 +47,31 @@ fun SlotScreen(
             horizontalArrangement = Arrangement.SpaceEvenly,
             verticalAlignment = Alignment.CenterVertically
         ) {
-            // Left panel: Receiver management
-            ReceiverPanel(
-                receivers = uiState.activeReceivers,
-                onRemove = viewModel::removeReceiver,
+            // Left panel: Receiver management + Spin button
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally,
                 modifier = Modifier
-                    .width(160.dp)
+                    .width(180.dp)
                     .padding(end = 8.dp)
-            )
+            ) {
+                ReceiverPanel(
+                    receivers = uiState.activeReceivers,
+                    onRemove = viewModel::removeReceiver,
+                    modifier = Modifier.weight(1f)
+                )
 
-            // Center: Slot machine
+                Spacer(modifier = Modifier.height(16.dp))
+
+                // Spin button (larger, in left column)
+                SpinButton(
+                    onClick = viewModel::spin,
+                    enabled = !uiState.isSpinning && !uiState.isGameOver && uiState.activeReceivers.isNotEmpty(),
+                    isSpinning = uiState.isSpinning,
+                    size = 140.dp
+                )
+            }
+
+            // Center: Slot machine + Festive message
             Column(
                 horizontalAlignment = Alignment.CenterHorizontally,
                 modifier = Modifier.weight(1f)
@@ -66,26 +81,24 @@ fun SlotScreen(
                     uiState = uiState
                 )
 
-                Spacer(modifier = Modifier.height(24.dp))
+                /*Spacer(modifier = Modifier.height(12.dp))
 
-                // Spin button
-                SpinButton(
-                    onClick = viewModel::spin,
-                    enabled = !uiState.isSpinning && !uiState.isGameOver && uiState.activeReceivers.isNotEmpty(),
-                    isSpinning = uiState.isSpinning
-                )
+                // Festive message below slot machine
+                FestiveMessage(
+                    message = uiState.festiveMessage
+                )*/
             }
 
-            // Right panel: Result display & controls
+            // Right panel: Result display & controls (same width as left)
             Column(
                 horizontalAlignment = Alignment.CenterHorizontally,
                 modifier = Modifier
-                    .width(160.dp)
+                    .width(180.dp)
                     .padding(start = 8.dp)
             ) {
                 ResultDisplay(
                     result = uiState.lastResult,
-                    modifier = Modifier.weight(1f)
+                    modifier = Modifier.weight(1f).width(180.dp)
                 )
 
                 Spacer(modifier = Modifier.height(16.dp))
@@ -96,14 +109,6 @@ fun SlotScreen(
                 )
             }
         }
-
-        // Layer 3: Festive message at bottom
-        FestiveMessage(
-            message = uiState.festiveMessage,
-            modifier = Modifier
-                .align(Alignment.BottomCenter)
-                .padding(bottom = 16.dp)
-        )
 
         // Layer 4: Jackpot celebration overlay
         JackpotCelebration(

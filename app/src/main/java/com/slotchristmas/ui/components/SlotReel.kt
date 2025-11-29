@@ -5,14 +5,14 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
@@ -20,19 +20,21 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.clipToBounds
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.slotchristmas.animation.ReelAnimationController
 import com.slotchristmas.domain.model.Participant
 import com.slotchristmas.ui.components.effects.SelectionFrame
+import com.slotchristmas.ui.components.reel.ReelConfig
 import com.slotchristmas.ui.theme.ChristmasGold
 import com.slotchristmas.ui.theme.ReelBackground
 import kotlin.math.abs
+import kotlin.math.roundToInt
 
 @Composable
 fun SlotReel(
@@ -40,11 +42,12 @@ fun SlotReel(
     controller: ReelAnimationController,
     label: String,
     modifier: Modifier = Modifier,
-    visibleItemCount: Int = 3,
-    itemHeight: Dp = 90.dp
+    visibleItemCount: Int = ReelConfig.VISIBLE_ITEMS,
+    itemHeight: Dp = ReelConfig.ITEM_SLOT_HEIGHT
 ) {
     val density = LocalDensity.current
     val itemHeightPx = with(density) { itemHeight.toPx() }
+    val centerSlotTopPx = with(density) { ReelConfig.CENTER_SLOT_TOP_Y.toPx() }
     val totalItems = items.size
     val totalHeightPx = itemHeightPx * totalItems
 
@@ -62,16 +65,16 @@ fun SlotReel(
 
         Spacer(modifier = Modifier.height(8.dp))
 
-        // Reel container
+        // Reel container - NO contentAlignment! Items positioned absolutely from top
         Box(
             modifier = Modifier
-                .width(itemHeight + 20.dp)
-                .height(itemHeight * visibleItemCount)
+                .width(ReelConfig.CONTAINER_WIDTH)
+                .height(ReelConfig.CONTAINER_HEIGHT)
                 .clip(RoundedCornerShape(16.dp))
                 .background(ReelBackground)
                 .border(3.dp, ChristmasGold.copy(alpha = 0.5f), RoundedCornerShape(16.dp))
-                .clipToBounds(),
-            contentAlignment = Alignment.Center
+                .clipToBounds()
+            // NOTE: No contentAlignment here - items use absolute positioning
         ) {
             if (items.isNotEmpty()) {
                 // Calculate which items are visible
@@ -90,53 +93,92 @@ fun SlotReel(
                 visibleIndices.forEach { index ->
                     val item = items.getOrNull(index) ?: return@forEach
 
-                    val yOffset by remember(index, controller.normalizedOffset) {
+                    // Calculate ABSOLUTE Y position from container top
+                    val yPositionPx by remember(index, controller.normalizedOffset) {
                         derivedStateOf {
-                            val normalizedOffset = controller.normalizedOffset
-                            var baseY = index * itemHeightPx - normalizedOffset
-
-                            // Wrap around for circular effect
-                            while (baseY < -itemHeightPx * 1.5f) {
-                                baseY += totalHeightPx
-                            }
-                            while (baseY > totalHeightPx - itemHeightPx * 0.5f) {
-                                baseY -= totalHeightPx
-                            }
-
-                            // Center the items in the viewport
-                            baseY + (itemHeightPx * visibleItemCount / 2) - (itemHeightPx / 2)
+                            calculateItemYPosition(
+                                index = index,
+                                normalizedOffset = controller.normalizedOffset,
+                                itemHeightPx = itemHeightPx,
+                                totalHeightPx = totalHeightPx,
+                                centerSlotTopPx = centerSlotTopPx
+                            )
                         }
                     }
 
                     // Calculate alpha for fade effect at edges
-                    val viewportCenter = itemHeightPx * visibleItemCount / 2
-                    val distanceFromCenter = abs(yOffset - viewportCenter + itemHeightPx / 2)
-                    val alpha = (1f - (distanceFromCenter / (itemHeightPx * 1.5f))).coerceIn(0.3f, 1f)
+                    val alpha = calculateAlpha(yPositionPx, centerSlotTopPx, itemHeightPx)
 
+                    // Item positioned ABSOLUTELY using offset modifier
                     Box(
                         modifier = Modifier
-                            .graphicsLayer {
-                                translationY = yOffset
-                                this.alpha = alpha
-                            }
-                            .size(itemHeight)
-                            .padding(8.dp),
-                        contentAlignment = Alignment.Center
+                            .offset { IntOffset(x = 0, y = yPositionPx.roundToInt()) }
+                            .fillMaxWidth()
+                            .height(itemHeight)
+                            .graphicsLayer { this.alpha = alpha },
+                        contentAlignment = Alignment.Center  // Center content WITHIN item slot
                     ) {
                         CircularParticipantImage(
                             participant = item,
-                            size = itemHeight - 16.dp
+                            size = ReelConfig.ITEM_CONTENT_SIZE
                         )
                     }
                 }
             }
 
-            // Selection frame overlay
+            // SelectionFrame at exact center, sized to match content
             SelectionFrame(
                 modifier = Modifier
                     .align(Alignment.Center)
-                    .size(itemHeight + 4.dp)
+                    .size(ReelConfig.SELECTION_FRAME_SIZE)
             )
         }
     }
+}
+
+/**
+ * Calculate ABSOLUTE Y position from container top.
+ *
+ * Invariant: When normalizedOffset = targetIndex * itemHeightPx,
+ *            item at targetIndex has yPosition = centerSlotTopPx (perfectly centered)
+ *
+ * @param index The item's index in the list
+ * @param normalizedOffset Current scroll offset (0 to totalHeightPx)
+ * @param itemHeightPx Height of one item slot in pixels
+ * @param totalHeightPx Total height of all items (itemHeightPx * itemCount)
+ * @param centerSlotTopPx Y position where centered item's top edge should be
+ */
+private fun calculateItemYPosition(
+    index: Int,
+    normalizedOffset: Float,
+    itemHeightPx: Float,
+    totalHeightPx: Float,
+    centerSlotTopPx: Float
+): Float {
+    // When normalizedOffset = targetIndex * itemHeightPx, item at targetIndex is at centerSlotTopPx
+    var yPosition = centerSlotTopPx + (index * itemHeightPx) - normalizedOffset
+
+    // Wrap around for infinite scroll effect
+    val viewportBuffer = itemHeightPx * 2
+    while (yPosition < -viewportBuffer) {
+        yPosition += totalHeightPx
+    }
+    while (yPosition > totalHeightPx - viewportBuffer) {
+        yPosition -= totalHeightPx
+    }
+
+    return yPosition
+}
+
+/**
+ * Calculate alpha (transparency) based on distance from center.
+ * Items at center are fully opaque, items at edges are faded.
+ */
+private fun calculateAlpha(
+    yPositionPx: Float,
+    centerSlotTopPx: Float,
+    itemHeightPx: Float
+): Float {
+    val distanceFromCenter = abs(yPositionPx - centerSlotTopPx)
+    return (1f - (distanceFromCenter / (itemHeightPx * 1.5f))).coerceIn(0.3f, 1f)
 }

@@ -37,7 +37,8 @@ fun SpinButton(
     onClick: () -> Unit,
     enabled: Boolean,
     isSpinning: Boolean,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    size: androidx.compose.ui.unit.Dp = 120.dp
 ) {
     val interactionSource = remember { MutableInteractionSource() }
     val isPressed by interactionSource.collectIsPressedAsState()
@@ -65,7 +66,7 @@ fun SpinButton(
     Box(
         modifier = modifier
             .scale(scale)
-            .size(120.dp)
+            .size(size)
             .shadow(
                 elevation = if (enabled) 12.dp else 4.dp,
                 shape = CircleShape,

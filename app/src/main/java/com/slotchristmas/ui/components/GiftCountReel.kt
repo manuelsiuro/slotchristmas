@@ -5,8 +5,9 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
@@ -26,28 +27,32 @@ import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.slotchristmas.animation.ReelAnimationController
 import com.slotchristmas.domain.model.GiftCount
 import com.slotchristmas.ui.components.effects.SelectionFrame
+import com.slotchristmas.ui.components.reel.ReelConfig
 import com.slotchristmas.ui.theme.ChristmasGold
 import com.slotchristmas.ui.theme.ChristmasGreen
 import com.slotchristmas.ui.theme.ChristmasRed
 import com.slotchristmas.ui.theme.ReelBackground
 import kotlin.math.abs
+import kotlin.math.roundToInt
 
 @Composable
 fun GiftCountReel(
     controller: ReelAnimationController,
     modifier: Modifier = Modifier,
-    visibleItemCount: Int = 3,
-    itemHeight: Dp = 90.dp
+    visibleItemCount: Int = ReelConfig.VISIBLE_ITEMS,
+    itemHeight: Dp = ReelConfig.ITEM_SLOT_HEIGHT
 ) {
     val giftCounts = GiftCount.entries
     val totalItems = giftCounts.size
     val density = LocalDensity.current
     val itemHeightPx = with(density) { itemHeight.toPx() }
+    val centerSlotTopPx = with(density) { ReelConfig.CENTER_SLOT_TOP_Y.toPx() }
     val totalHeightPx = itemHeightPx * totalItems
 
     Column(
@@ -64,16 +69,16 @@ fun GiftCountReel(
 
         Spacer(modifier = Modifier.height(8.dp))
 
-        // Reel container
+        // Reel container - NO contentAlignment! Items positioned absolutely from top
         Box(
             modifier = Modifier
-                .width(itemHeight + 20.dp)
-                .height(itemHeight * visibleItemCount)
+                .width(ReelConfig.CONTAINER_WIDTH)
+                .height(ReelConfig.CONTAINER_HEIGHT)
                 .clip(RoundedCornerShape(16.dp))
                 .background(ReelBackground)
                 .border(3.dp, ChristmasGold.copy(alpha = 0.5f), RoundedCornerShape(16.dp))
-                .clipToBounds(),
-            contentAlignment = Alignment.Center
+                .clipToBounds()
+            // NOTE: No contentAlignment here - items use absolute positioning
         ) {
             // Calculate which items are visible
             val visibleIndices by remember(controller.normalizedOffset, totalItems) {
@@ -91,51 +96,43 @@ fun GiftCountReel(
             visibleIndices.forEach { index ->
                 val giftCount = giftCounts.getOrNull(index) ?: return@forEach
 
-                val yOffset by remember(index, controller.normalizedOffset) {
+                // Calculate ABSOLUTE Y position from container top
+                val yPositionPx by remember(index, controller.normalizedOffset) {
                     derivedStateOf {
-                        val normalizedOffset = controller.normalizedOffset
-                        var baseY = index * itemHeightPx - normalizedOffset
-
-                        // Wrap around for circular effect
-                        while (baseY < -itemHeightPx * 1.5f) {
-                            baseY += totalHeightPx
-                        }
-                        while (baseY > totalHeightPx - itemHeightPx * 0.5f) {
-                            baseY -= totalHeightPx
-                        }
-
-                        // Center the items in the viewport
-                        baseY + (itemHeightPx * visibleItemCount / 2) - (itemHeightPx / 2)
+                        calculateGiftItemYPosition(
+                            index = index,
+                            normalizedOffset = controller.normalizedOffset,
+                            itemHeightPx = itemHeightPx,
+                            totalHeightPx = totalHeightPx,
+                            centerSlotTopPx = centerSlotTopPx
+                        )
                     }
                 }
 
                 // Calculate alpha for fade effect at edges
-                val viewportCenter = itemHeightPx * visibleItemCount / 2
-                val distanceFromCenter = abs(yOffset - viewportCenter + itemHeightPx / 2)
-                val alpha = (1f - (distanceFromCenter / (itemHeightPx * 1.5f))).coerceIn(0.3f, 1f)
+                val alpha = calculateGiftAlpha(yPositionPx, centerSlotTopPx, itemHeightPx)
 
+                // Item positioned ABSOLUTELY using offset modifier
                 Box(
                     modifier = Modifier
-                        .graphicsLayer {
-                            translationY = yOffset
-                            this.alpha = alpha
-                        }
-                        .size(itemHeight)
-                        .padding(8.dp),
-                    contentAlignment = Alignment.Center
+                        .offset { IntOffset(x = 0, y = yPositionPx.roundToInt()) }
+                        .fillMaxWidth()
+                        .height(itemHeight)
+                        .graphicsLayer { this.alpha = alpha },
+                    contentAlignment = Alignment.Center  // Center content WITHIN item slot
                 ) {
                     GiftCountItem(
                         giftCount = giftCount,
-                        size = itemHeight - 16.dp
+                        size = ReelConfig.ITEM_CONTENT_SIZE
                     )
                 }
             }
 
-            // Selection frame overlay
+            // SelectionFrame at exact center, sized to match content
             SelectionFrame(
                 modifier = Modifier
                     .align(Alignment.Center)
-                    .size(itemHeight + 4.dp)
+                    .size(ReelConfig.SELECTION_FRAME_SIZE)
             )
         }
     }
@@ -174,4 +171,45 @@ private fun GiftCountItem(
             fontWeight = FontWeight.Bold
         )
     }
+}
+
+/**
+ * Calculate ABSOLUTE Y position from container top.
+ *
+ * Invariant: When normalizedOffset = targetIndex * itemHeightPx,
+ *            item at targetIndex has yPosition = centerSlotTopPx (perfectly centered)
+ */
+private fun calculateGiftItemYPosition(
+    index: Int,
+    normalizedOffset: Float,
+    itemHeightPx: Float,
+    totalHeightPx: Float,
+    centerSlotTopPx: Float
+): Float {
+    // When normalizedOffset = targetIndex * itemHeightPx, item at targetIndex is at centerSlotTopPx
+    var yPosition = centerSlotTopPx + (index * itemHeightPx) - normalizedOffset
+
+    // Wrap around for infinite scroll effect
+    val viewportBuffer = itemHeightPx * 2
+    while (yPosition < -viewportBuffer) {
+        yPosition += totalHeightPx
+    }
+    while (yPosition > totalHeightPx - viewportBuffer) {
+        yPosition -= totalHeightPx
+    }
+
+    return yPosition
+}
+
+/**
+ * Calculate alpha (transparency) based on distance from center.
+ * Items at center are fully opaque, items at edges are faded.
+ */
+private fun calculateGiftAlpha(
+    yPositionPx: Float,
+    centerSlotTopPx: Float,
+    itemHeightPx: Float
+): Float {
+    val distanceFromCenter = abs(yPositionPx - centerSlotTopPx)
+    return (1f - (distanceFromCenter / (itemHeightPx * 1.5f))).coerceIn(0.3f, 1f)
 }

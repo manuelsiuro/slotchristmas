@@ -1,6 +1,6 @@
 package com.slotchristmas.ui.components.effects
 
-import androidx.compose.animation.core.withFrameMillis
+import kotlinx.coroutines.delay
 import androidx.compose.foundation.Canvas
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -60,22 +60,21 @@ fun JackpotCelebration(
         if (!isActive) return@LaunchedEffect
 
         while (isActive) {
-            withFrameMillis { frameTime ->
-                val elapsed = frameTime - startTime
-                if (elapsed > durationMs) return@withFrameMillis
+            val elapsed = System.currentTimeMillis() - startTime
+            if (elapsed > durationMs) break
 
-                val progress = elapsed / durationMs.toFloat()
-                val gravity = 500f
+            val progress = elapsed / durationMs.toFloat()
+            val gravity = 500f
 
-                particles = particles.map { particle ->
-                    particle.copy(
-                        x = particle.startX + particle.velocityX * progress,
-                        y = particle.startY + particle.velocityY * progress + 0.5f * gravity * progress * progress,
-                        rotation = particle.startRotation + particle.rotationSpeed * progress * 360f,
-                        alpha = (1f - progress).coerceIn(0f, 1f)
-                    )
-                }
+            particles = particles.map { particle ->
+                particle.copy(
+                    x = particle.startX + particle.velocityX * progress,
+                    y = particle.startY + particle.velocityY * progress + 0.5f * gravity * progress * progress,
+                    rotation = particle.startRotation + particle.rotationSpeed * progress * 360f,
+                    alpha = (1f - progress).coerceIn(0f, 1f)
+                )
             }
+            delay(16) // ~60fps
         }
     }
 

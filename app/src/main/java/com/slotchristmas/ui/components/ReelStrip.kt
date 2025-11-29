@@ -10,6 +10,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
+import kotlinx.coroutines.launch
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -18,7 +19,6 @@ import androidx.compose.ui.unit.dp
 import com.slotchristmas.animation.AnimationConfig
 import com.slotchristmas.animation.ReelAnimationController
 import com.slotchristmas.domain.model.GiftCount
-import com.slotchristmas.domain.model.Participant
 import com.slotchristmas.ui.slot.SlotUiState
 import com.slotchristmas.ui.slot.SpinPhase
 import com.slotchristmas.ui.theme.BackgroundOverlay
@@ -62,13 +62,13 @@ fun ReelStrip(
         when (uiState.spinPhase) {
             SpinPhase.SPINNING_UP, SpinPhase.SUSTAINED_SPIN -> {
                 // All reels start spinning together
-                kotlinx.coroutines.launch {
+                launch {
                     chooserController.spinAndLandOn(uiState.targetChooserIndex)
                 }
-                kotlinx.coroutines.launch {
+                launch {
                     receiverController.spinAndLandOn(uiState.targetReceiverIndex)
                 }
-                kotlinx.coroutines.launch {
+                launch {
                     giftCountController.spinAndLandOn(uiState.targetGiftCountIndex)
                 }
             }
