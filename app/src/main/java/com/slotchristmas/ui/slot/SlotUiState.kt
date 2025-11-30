@@ -13,10 +13,10 @@ data class SlotUiState(
     val isSpinning: Boolean = false,
     val spinPhase: SpinPhase = SpinPhase.IDLE,
 
-    // Target indices for animation
-    val targetChooserIndex: Int = 0,
-    val targetReceiverIndex: Int = 0,
-    val targetGiftCountIndex: Int = 0,
+    // Selected results (set at spin start, displayed when reel stops)
+    val selectedChooser: Participant? = null,
+    val selectedReceiver: Participant? = null,
+    val selectedGiftCount: GiftCount? = null,
 
     // Results
     val lastResult: SpinResult? = null,
@@ -35,11 +35,10 @@ data class SlotUiState(
 
 enum class SpinPhase {
     IDLE,
-    SPINNING_UP,
-    SUSTAINED_SPIN,
-    REEL1_STOPPING,
-    REEL2_STOPPING,
-    REEL3_STOPPING,
-    CELEBRATION,
+    SPINNING,       // All reels cycling
+    REEL1_STOPPED,  // First reel stopped, others still spinning
+    REEL2_STOPPED,  // First two stopped, third still spinning
+    REEL3_STOPPED,  // All stopped
+    CELEBRATION,    // Jackpot celebration
     COMPLETE
 }

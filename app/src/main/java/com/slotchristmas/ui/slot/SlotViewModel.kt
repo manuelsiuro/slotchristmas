@@ -25,13 +25,6 @@ class SlotViewModel(
     private val _uiState = MutableStateFlow(SlotUiState())
     val uiState: StateFlow<SlotUiState> = _uiState.asStateFlow()
 
-    // Callbacks for animation coordination
-    var onSpinStarted: (() -> Unit)? = null
-    var onReel1Stopping: (() -> Unit)? = null
-    var onReel2Stopping: (() -> Unit)? = null
-    var onReel3Stopping: (() -> Unit)? = null
-    var onSpinComplete: (() -> Unit)? = null
-
     init {
         initializeGame()
     }
@@ -66,54 +59,38 @@ class SlotViewModel(
             val receiver = currentState.activeReceivers.random()
             val giftCount = GiftCount.weightedRandom()
 
-            val chooserIndex = currentState.allParticipants.indexOf(chooser)
-            val receiverIndex = currentState.activeReceivers.indexOf(receiver)
-            val giftCountIndex = GiftCount.entries.indexOf(giftCount)
-
-            // Update state with targets
+            // Update state with selected results and start spinning
             _uiState.update { state ->
                 state.copy(
                     isSpinning = true,
-                    spinPhase = SpinPhase.SPINNING_UP,
-                    targetChooserIndex = chooserIndex,
-                    targetReceiverIndex = receiverIndex,
-                    targetGiftCountIndex = giftCountIndex
+                    spinPhase = SpinPhase.SPINNING,
+                    selectedChooser = chooser,
+                    selectedReceiver = receiver,
+                    selectedGiftCount = giftCount
                 )
             }
 
             // Play spin start sound
             audioManager.playSfx(SoundEffect.SPIN_START)
-            onSpinStarted?.invoke()
 
             // Start spinning loop sound after brief delay
             delay(200)
             audioManager.playSfx(SoundEffect.SPINNING_LOOP, loop = true)
 
-            _uiState.update { it.copy(spinPhase = SpinPhase.SUSTAINED_SPIN) }
-
-            // Wait for reel 1 to stop
+            // Reel 1 stops after 2.3 seconds
             delay(2300)
-            _uiState.update { it.copy(spinPhase = SpinPhase.REEL1_STOPPING) }
-            onReel1Stopping?.invoke()
-
-            delay(500)
+            _uiState.update { it.copy(spinPhase = SpinPhase.REEL1_STOPPED) }
             audioManager.playSfx(SoundEffect.REEL_STOP)
 
-            // Wait for reel 2 to stop
-            delay(700)
-            _uiState.update { it.copy(spinPhase = SpinPhase.REEL2_STOPPING) }
-            onReel2Stopping?.invoke()
-
+            // Reel 2 stops 500ms later
             delay(500)
+            _uiState.update { it.copy(spinPhase = SpinPhase.REEL2_STOPPED) }
             audioManager.playSfx(SoundEffect.REEL_STOP)
 
-            // Wait for reel 3 to stop
-            delay(700)
+            // Reel 3 stops 500ms later
+            delay(500)
             audioManager.stopSfx(SoundEffect.SPINNING_LOOP)
-            _uiState.update { it.copy(spinPhase = SpinPhase.REEL3_STOPPING) }
-            onReel3Stopping?.invoke()
-
-            delay(500)
+            _uiState.update { it.copy(spinPhase = SpinPhase.REEL3_STOPPED) }
             audioManager.playSfx(SoundEffect.REEL_STOP)
 
             // Create result
@@ -154,8 +131,6 @@ class SlotViewModel(
                     isGameOver = updatedReceivers.isEmpty()
                 )
             }
-
-            onSpinComplete?.invoke()
 
             // Reset phase after a brief moment
             delay(500)

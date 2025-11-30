@@ -11,35 +11,6 @@ A festive Android slot machine app for Christmas gift exchanges built with Kotli
 - **Landscape Mode**: Optimized for horizontal display
 - **Receiver Management**: Remove participants who have received all their gifts
 
-## Setup Instructions
-
-### 1. Fix Gradle Wrapper (Required)
-
-The gradle wrapper jar is missing. In Android Studio:
-
-1. Open **Terminal** (View → Tool Windows → Terminal)
-2. Run:
-   ```bash
-   gradle wrapper --gradle-version 8.5
-   ```
-
-   Or if `gradle` is not installed, download the wrapper jar manually:
-   - Download from: https://services.gradle.org/distributions/gradle-8.5-bin.zip
-   - Extract and copy `lib/gradle-wrapper.jar` to `gradle/wrapper/`
-
-3. Alternatively, Android Studio should prompt to fix the wrapper - click "OK" when prompted.
-
-### 2. Sync Gradle
-
-After fixing the wrapper:
-1. Click **File → Sync Project with Gradle Files**
-2. Wait for dependencies to download
-
-### 3. Build & Run
-
-1. Connect an Android device or start an emulator
-2. Click **Run** (green play button) or press `Shift+F10`
-
 ## Project Structure
 
 ```

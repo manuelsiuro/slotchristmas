@@ -8,17 +8,10 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.remember
-import kotlinx.coroutines.launch
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.dp
-import com.slotchristmas.animation.AnimationConfig
-import com.slotchristmas.animation.ReelAnimationController
-import com.slotchristmas.domain.model.GiftCount
 import com.slotchristmas.ui.slot.SlotUiState
 import com.slotchristmas.ui.slot.SpinPhase
 import com.slotchristmas.ui.theme.BackgroundOverlay
@@ -29,52 +22,10 @@ fun ReelStrip(
     uiState: SlotUiState,
     modifier: Modifier = Modifier
 ) {
-    val density = LocalDensity.current
-    val itemHeightPx = with(density) { 90.dp.toPx() }
-
-    // Create animation controllers for each reel
-    val chooserController = remember {
-        ReelAnimationController(
-            itemHeightPx = itemHeightPx,
-            itemCount = 10, // Max participants
-            config = AnimationConfig.REEL_1
-        )
-    }
-
-    val receiverController = remember {
-        ReelAnimationController(
-            itemHeightPx = itemHeightPx,
-            itemCount = 10, // Max participants
-            config = AnimationConfig.REEL_2
-        )
-    }
-
-    val giftCountController = remember {
-        ReelAnimationController(
-            itemHeightPx = itemHeightPx,
-            itemCount = GiftCount.entries.size,
-            config = AnimationConfig.REEL_3
-        )
-    }
-
-    // Handle spin animation
-    LaunchedEffect(uiState.spinPhase) {
-        when (uiState.spinPhase) {
-            SpinPhase.SPINNING_UP, SpinPhase.SUSTAINED_SPIN -> {
-                // All reels start spinning together
-                launch {
-                    chooserController.spinAndLandOn(uiState.targetChooserIndex)
-                }
-                launch {
-                    receiverController.spinAndLandOn(uiState.targetReceiverIndex)
-                }
-                launch {
-                    giftCountController.spinAndLandOn(uiState.targetGiftCountIndex)
-                }
-            }
-            else -> { /* Other phases handled by timing in ViewModel */ }
-        }
-    }
+    // Determine which reels are still spinning based on phase
+    val reel1Spinning = uiState.spinPhase == SpinPhase.SPINNING
+    val reel2Spinning = uiState.spinPhase in listOf(SpinPhase.SPINNING, SpinPhase.REEL1_STOPPED)
+    val reel3Spinning = uiState.spinPhase in listOf(SpinPhase.SPINNING, SpinPhase.REEL1_STOPPED, SpinPhase.REEL2_STOPPED)
 
     Box(
         modifier = modifier
@@ -91,20 +42,23 @@ fun ReelStrip(
             // Reel 1: Chooser
             SlotReel(
                 items = uiState.allParticipants,
-                controller = chooserController,
+                isSpinning = reel1Spinning,
+                result = uiState.selectedChooser,
                 label = "GIVES"
             )
 
             // Reel 2: Receiver
             SlotReel(
                 items = uiState.activeReceivers,
-                controller = receiverController,
+                isSpinning = reel2Spinning,
+                result = uiState.selectedReceiver,
                 label = "RECEIVES"
             )
 
             // Reel 3: Gift Count
             GiftCountReel(
-                controller = giftCountController
+                isSpinning = reel3Spinning,
+                result = uiState.selectedGiftCount
             )
         }
     }

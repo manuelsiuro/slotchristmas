@@ -67,7 +67,7 @@ fun SlotScreen(
                     onClick = viewModel::spin,
                     enabled = !uiState.isSpinning && !uiState.isGameOver && uiState.activeReceivers.isNotEmpty(),
                     isSpinning = uiState.isSpinning,
-                    size = 140.dp
+                    size = 100.dp
                 )
             }
 
