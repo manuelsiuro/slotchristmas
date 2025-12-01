@@ -10,6 +10,8 @@ A festive Android slot machine app for Christmas gift exchanges built with Kotli
 - **Jackpot Celebrations**: Particle effects when someone gets 4 gifts
 - **Landscape Mode**: Optimized for horizontal display
 - **Receiver Management**: Remove participants who have received all their gifts
+- **Christmas String Lights Border**: Animated multicolor lights around panels with 4 cycling modes (Twinkling, Chase, Pulsing, Color Cycling)
+- **Festive Typography**: Lobster font from Google Fonts for a friendly, holiday feel
 
 ## Project Structure
 
@@ -51,6 +53,8 @@ app/src/main/
 │   │   │   ├── SpinButton.kt            # Animated spin button
 │   │   │   ├── VolumeControl.kt         # Mute toggle
 │   │   │   └── effects/
+│   │   │       ├── CandyCaneBorder.kt    # Animated candy cane border
+│   │   │       ├── ChristmasLightsBorder.kt # String lights border effect
 │   │   │       ├── JackpotParticles.kt  # Confetti particle system
 │   │   │       └── SelectionFrame.kt    # Pulsing gold frame
 │   │   ├── slot/
@@ -65,6 +69,7 @@ app/src/main/
 │       └── FestiveMessages.kt           # Random message generator
 └── res/
     ├── drawable/                        # Placeholder graphics
+    ├── font/                            # Custom fonts (Lobster)
     ├── raw/                             # Audio files (empty placeholders)
     └── values/                          # Colors, strings, themes
 ```

@@ -25,6 +25,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.slotchristmas.domain.model.SpinResult
+import com.slotchristmas.ui.components.effects.christmasLightsBorder
 import com.slotchristmas.ui.theme.BackgroundOverlay
 import com.slotchristmas.ui.theme.ChristmasGold
 import com.slotchristmas.ui.theme.ChristmasGreen
@@ -37,6 +38,11 @@ fun ResultDisplay(
 ) {
     Column(
         modifier = modifier
+            .christmasLightsBorder(
+                cornerRadius = 16.dp,
+                lightCount = 20,
+                borderInset = 8.dp
+            )
             .clip(RoundedCornerShape(16.dp))
             .background(BackgroundOverlay)
             .padding(12.dp),

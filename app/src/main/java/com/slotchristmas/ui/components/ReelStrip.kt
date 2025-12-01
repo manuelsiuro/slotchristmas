@@ -34,7 +34,7 @@ fun ReelStrip(
                 borderWidth = 16.dp,
                 cornerRadius = 24.dp,
                 stripeWidth = 24.dp,
-                animationDurationMs = 6000
+                animationDurationMs = 3000
             )
             .padding(16.dp)
             .clip(RoundedCornerShape(8.dp))
