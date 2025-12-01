@@ -1,8 +1,15 @@
 package com.slotchristmas.ui.components
 
 import androidx.compose.animation.animateColorAsState
+import androidx.compose.animation.core.FastOutSlowInEasing
+import androidx.compose.animation.core.RepeatMode
+import androidx.compose.animation.core.animateFloat
 import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.infiniteRepeatable
+import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.animation.core.spring
+import androidx.compose.animation.core.tween
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -23,9 +30,13 @@ import androidx.compose.ui.draw.scale
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.slotchristmas.R
+import com.slotchristmas.ui.components.effects.christmasLightsBorder
 import com.slotchristmas.ui.theme.ChristmasGold
 import com.slotchristmas.ui.theme.ChristmasRed
 import com.slotchristmas.ui.theme.SpinButtonDisabled
@@ -63,10 +74,35 @@ fun SpinButton(
         label = "borderColor"
     )
 
+    // Pulsing animation for Santa image when spinning
+    val infiniteTransition = rememberInfiniteTransition(label = "santaPulse")
+    val pulseScale by infiniteTransition.animateFloat(
+        initialValue = 0.95f,
+        targetValue = 1.05f,
+        animationSpec = infiniteRepeatable(
+            animation = tween(600, easing = FastOutSlowInEasing),
+            repeatMode = RepeatMode.Reverse
+        ),
+        label = "pulseScale"
+    )
+
     Box(
         modifier = modifier
             .scale(scale)
             .size(size)
+            .then(
+                if (isSpinning) {
+                    Modifier.christmasLightsBorder(
+                        lightCount = 12,
+                        cornerRadius = size / 2,
+                        borderInset = 4.dp,
+                        bulbRadius = 4.dp,
+                        glowRadius = 8.dp
+                    )
+                } else {
+                    Modifier
+                }
+            )
             .shadow(
                 elevation = if (enabled) 12.dp else 4.dp,
                 shape = CircleShape,
@@ -84,7 +120,13 @@ fun SpinButton(
                     )
                 }
             )
-            .border(4.dp, borderColor, CircleShape)
+            .then(
+                if (!isSpinning) {
+                    Modifier.border(4.dp, borderColor, CircleShape)
+                } else {
+                    Modifier
+                }
+            )
             .clickable(
                 interactionSource = interactionSource,
                 indication = null,
@@ -93,11 +135,23 @@ fun SpinButton(
             ),
         contentAlignment = Alignment.Center
     ) {
-        Text(
-            text = if (isSpinning) "..." else "SPIN!",
-            color = Color.White,
-            fontSize = 24.sp,
-            fontWeight = FontWeight.Bold
-        )
+        if (isSpinning) {
+            Image(
+                painter = painterResource(id = R.drawable.spin_in_progress),
+                contentDescription = "Spinning...",
+                modifier = Modifier
+                    .scale(pulseScale)
+                    .size(size - 16.dp)
+                    .clip(CircleShape),
+                contentScale = ContentScale.Crop
+            )
+        } else {
+            Text(
+                text = "SPIN!",
+                color = Color.White,
+                fontSize = 24.sp,
+                fontWeight = FontWeight.Bold
+            )
+        }
     }
 }
