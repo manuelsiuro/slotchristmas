@@ -81,12 +81,12 @@ fun SlotScreen(
                     uiState = uiState
                 )
 
-                /*Spacer(modifier = Modifier.height(12.dp))
+                Spacer(modifier = Modifier.height(12.dp))
 
                 // Festive message below slot machine
                 FestiveMessage(
                     message = uiState.festiveMessage
-                )*/
+                )
             }
 
             // Right panel: Result display & controls (same width as left)

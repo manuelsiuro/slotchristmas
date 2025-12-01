@@ -11,11 +11,17 @@ object AssetConfig {
 
     // Backgrounds (rotate randomly)
     val BACKGROUNDS: List<Int> = listOf(
+        R.drawable.bg_christmas_6,
+        R.drawable.bg_christmas_7,
+        R.drawable.bg_christmas_8,
+        R.drawable.bg_christmas_9,
+        R.drawable.bg_christmas_10
+                /*,
         R.drawable.bg_christmas_1,
         R.drawable.bg_christmas_2,
         R.drawable.bg_christmas_3,
         R.drawable.bg_christmas_4,
-        R.drawable.bg_christmas_5
+        R.drawable.bg_christmas_5*/
     )
 
     // Background change interval in milliseconds

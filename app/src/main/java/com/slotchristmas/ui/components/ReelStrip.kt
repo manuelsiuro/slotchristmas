@@ -1,10 +1,11 @@
 package com.slotchristmas.ui.components
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
@@ -12,10 +13,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
+import com.slotchristmas.ui.components.effects.candyCaneBorder
 import com.slotchristmas.ui.slot.SlotUiState
 import com.slotchristmas.ui.slot.SpinPhase
 import com.slotchristmas.ui.theme.BackgroundOverlay
-import com.slotchristmas.ui.theme.ChristmasGold
 
 @Composable
 fun ReelStrip(
@@ -29,13 +30,19 @@ fun ReelStrip(
 
     Box(
         modifier = modifier
-            .clip(RoundedCornerShape(24.dp))
-            .background(BackgroundOverlay)
-            .border(4.dp, ChristmasGold, RoundedCornerShape(24.dp))
-            .padding(16.dp),
+            .candyCaneBorder(
+                borderWidth = 16.dp,
+                cornerRadius = 24.dp,
+                stripeWidth = 24.dp,
+                animationDurationMs = 6000
+            )
+            .padding(16.dp)
+            .clip(RoundedCornerShape(8.dp))
+            .background(BackgroundOverlay),
         contentAlignment = Alignment.Center
     ) {
         Row(
+            modifier = Modifier.padding(16.dp),
             horizontalArrangement = Arrangement.spacedBy(16.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {

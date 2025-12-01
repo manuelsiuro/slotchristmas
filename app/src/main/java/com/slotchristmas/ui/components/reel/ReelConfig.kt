@@ -19,7 +19,7 @@ object ReelConfig {
     val ITEM_SLOT_HEIGHT: Dp = 90.dp        // Total height of one slot (content + padding)
 
     // Container dimensions
-    const val VISIBLE_ITEMS: Int = 3
+    const val VISIBLE_ITEMS: Int = 1
     val CONTAINER_HEIGHT: Dp = ITEM_SLOT_HEIGHT * VISIBLE_ITEMS  // 270.dp
     val CONTAINER_WIDTH: Dp = ITEM_SLOT_HEIGHT + 20.dp           // 110.dp
 

@@ -74,7 +74,7 @@ fun SlotReel(
                 .height(ReelConfig.CONTAINER_HEIGHT)
                 .clip(RoundedCornerShape(16.dp))
                 .background(ReelBackground)
-                .border(3.dp, ChristmasGold.copy(alpha = 0.5f), RoundedCornerShape(16.dp)),
+                /*.border(3.dp, ChristmasGold.copy(alpha = 0.5f), RoundedCornerShape(16.dp))*/,
             contentAlignment = Alignment.Center
         ) {
             // Display single centered item
