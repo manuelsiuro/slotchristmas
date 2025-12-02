@@ -86,7 +86,9 @@ fun SlotScreen(
 
                 // Festive message below slot machine
                 FestiveMessage(
-                    message = uiState.festiveMessage
+                    jokeSetup = uiState.jokeSetup,
+                    jokePunchline = uiState.jokePunchline,
+                    showPunchline = uiState.showPunchline
                 )
             }
 

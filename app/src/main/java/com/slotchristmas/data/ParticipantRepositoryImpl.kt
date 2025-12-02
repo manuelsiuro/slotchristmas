@@ -9,7 +9,7 @@ class ParticipantRepositoryImpl : ParticipantRepository {
     override fun getParticipants(): List<Participant> = listOf(
         Participant(id = "1", name = "Kristel", photoResId = R.drawable.participant_1),
         Participant(id = "2", name = "Quentin", photoResId = R.drawable.participant_2),
-        Participant(id = "3", name = "Veronique", photoResId = R.drawable.participant_3),
+        Participant(id = "3", name = "Véro", photoResId = R.drawable.participant_3),
         Participant(id = "4", name = "Mario", photoResId = R.drawable.participant_4),
         Participant(id = "5", name = "Alicia", photoResId = R.drawable.participant_5),
         Participant(id = "6", name = "Max", photoResId = R.drawable.participant_6),

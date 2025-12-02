@@ -20,6 +20,10 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Shadow
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -27,6 +31,7 @@ import com.slotchristmas.domain.model.Participant
 import com.slotchristmas.ui.components.effects.SelectionFrame
 import com.slotchristmas.ui.components.reel.ReelConfig
 import com.slotchristmas.ui.theme.ChristmasGold
+import com.slotchristmas.ui.theme.LobsterFont
 import com.slotchristmas.ui.theme.ReelBackground
 import kotlinx.coroutines.delay
 
@@ -66,7 +71,15 @@ fun SlotReel(
             text = label,
             color = ChristmasGold,
             fontSize = 14.sp,
-            fontWeight = FontWeight.Bold
+            fontWeight = FontWeight.Bold,
+            fontFamily = LobsterFont,
+            style = TextStyle(
+                shadow = Shadow(
+                    color = Color.Black.copy(alpha = 0.6f),
+                    offset = Offset(2f, 2f),
+                    blurRadius = 4f
+                )
+            )
         )
 
         Spacer(modifier = Modifier.height(8.dp))

@@ -21,7 +21,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Shadow
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
@@ -32,6 +35,7 @@ import com.slotchristmas.ui.components.effects.christmasLightsBorder
 import com.slotchristmas.ui.theme.BackgroundOverlay
 import com.slotchristmas.ui.theme.ChristmasGold
 import com.slotchristmas.ui.theme.ChristmasRed
+import com.slotchristmas.ui.theme.LobsterFont
 import com.slotchristmas.ui.theme.TextPrimary
 
 @Composable
@@ -53,14 +57,22 @@ fun ReceiverPanel(
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Text(
-            text = "Receivers",
+            text = "Famille",
             color = ChristmasGold,
-            fontSize = 14.sp,
-            fontWeight = FontWeight.Bold
+            fontSize = 16.sp,
+            fontWeight = FontWeight.Bold,
+            fontFamily = LobsterFont,
+            style = TextStyle(
+                shadow = Shadow(
+                    color = Color.Black.copy(alpha = 0.6f),
+                    offset = Offset(2f, 2f),
+                    blurRadius = 4f
+                )
+            )
         )
 
         Text(
-            text = "(${receivers.size} left)",
+            text = "${receivers.size} participants",
             color = TextPrimary.copy(alpha = 0.7f),
             fontSize = 11.sp
         )

@@ -6,11 +6,13 @@ import androidx.lifecycle.viewModelScope
 import com.slotchristmas.audio.AudioManager
 import com.slotchristmas.audio.SoundEffect
 import com.slotchristmas.config.AssetConfig
+import com.slotchristmas.data.api.BlagueApiService
 import com.slotchristmas.domain.model.GiftCount
 import com.slotchristmas.domain.model.Participant
 import com.slotchristmas.domain.model.SpinResult
 import com.slotchristmas.domain.repository.ParticipantRepository
 import com.slotchristmas.util.FestiveMessages
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -22,11 +24,14 @@ private const val TAG = "SlotChristmas"
 
 class SlotViewModel(
     private val participantRepository: ParticipantRepository,
-    private val audioManager: AudioManager
+    private val audioManager: AudioManager,
+    private val blagueApiService: BlagueApiService
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(SlotUiState())
     val uiState: StateFlow<SlotUiState> = _uiState.asStateFlow()
+
+    private var punchlineJob: Job? = null
 
     init {
         initializeGame()
@@ -48,8 +53,48 @@ class SlotViewModel(
             )
         }
 
+        // Fetch initial joke from API
+        fetchNewJoke()
+
         // Start background music
         audioManager.startMusic()
+    }
+
+    private fun fetchNewJoke() {
+        // Cancel any pending punchline reveal
+        punchlineJob?.cancel()
+
+        viewModelScope.launch {
+            try {
+                val blague = blagueApiService.getRandomBlague()
+                _uiState.update { state ->
+                    state.copy(
+                        jokeSetup = blague.blague,
+                        jokePunchline = blague.reponse,
+                        showPunchline = false
+                    )
+                }
+                Log.d(TAG, "Fetched joke: ${blague.blague}")
+
+                // Schedule punchline reveal after 5 seconds
+                punchlineJob = launch {
+                    delay(5000)
+                    _uiState.update { it.copy(showPunchline = true) }
+                    Log.d(TAG, "Showing punchline: ${blague.reponse}")
+                }
+            } catch (e: Exception) {
+                // Fallback to static message if API fails
+                Log.e(TAG, "Failed to fetch joke: ${e.message}")
+                val fallback = FestiveMessages.random()
+                _uiState.update { state ->
+                    state.copy(
+                        jokeSetup = fallback,
+                        jokePunchline = "",
+                        showPunchline = false
+                    )
+                }
+            }
+        }
     }
 
     fun spin() {
@@ -145,6 +190,9 @@ class SlotViewModel(
             // Reset phase after a brief moment
             delay(500)
             _uiState.update { it.copy(spinPhase = SpinPhase.IDLE) }
+
+            // Fetch new joke for next display
+            fetchNewJoke()
         }
     }
 

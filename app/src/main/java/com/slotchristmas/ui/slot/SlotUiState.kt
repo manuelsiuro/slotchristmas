@@ -26,6 +26,11 @@ data class SlotUiState(
     val backgroundResId: Int = 0,
     val festiveMessage: String = "",
 
+    // Joke state (from Blague API)
+    val jokeSetup: String = "",       // The "blague" field
+    val jokePunchline: String = "",   // The "reponse" field
+    val showPunchline: Boolean = false,
+
     // Audio state
     val isMuted: Boolean = false,
 

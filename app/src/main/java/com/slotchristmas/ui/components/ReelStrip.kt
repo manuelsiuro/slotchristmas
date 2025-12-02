@@ -51,7 +51,7 @@ fun ReelStrip(
                 items = uiState.allParticipants,
                 isSpinning = reel1Spinning,
                 result = uiState.selectedChooser,
-                label = "GIVES"
+                label = "Qui ?"
             )
 
             // Reel 2: Receiver
@@ -59,7 +59,7 @@ fun ReelStrip(
                 items = uiState.activeReceivers,
                 isSpinning = reel2Spinning,
                 result = uiState.selectedReceiver,
-                label = "RECEIVES"
+                label = "Pour qui ?"
             )
 
             // Reel 3: Gift Count

@@ -65,7 +65,7 @@ fun GiftCountReel(
     ) {
         // Label
         Text(
-            text = "GIFTS",
+            text = "Combien ?",
             color = ChristmasGold,
             fontSize = 14.sp,
             fontWeight = FontWeight.Bold

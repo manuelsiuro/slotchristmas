@@ -28,10 +28,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Shadow
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -39,6 +42,7 @@ import com.slotchristmas.R
 import com.slotchristmas.ui.components.effects.christmasLightsBorder
 import com.slotchristmas.ui.theme.ChristmasGold
 import com.slotchristmas.ui.theme.ChristmasRed
+import com.slotchristmas.ui.theme.LobsterFont
 import com.slotchristmas.ui.theme.SpinButtonDisabled
 import com.slotchristmas.ui.theme.SpinButtonGradientEnd
 import com.slotchristmas.ui.theme.SpinButtonGradientStart
@@ -150,7 +154,15 @@ fun SpinButton(
                 text = "SPIN!",
                 color = Color.White,
                 fontSize = 24.sp,
-                fontWeight = FontWeight.Bold
+                fontWeight = FontWeight.Bold,
+                fontFamily = LobsterFont,
+                style = TextStyle(
+                    shadow = Shadow(
+                        color = Color.Black.copy(alpha = 0.6f),
+                        offset = Offset(2f, 2f),
+                        blurRadius = 4f
+                    )
+                )
             )
         }
     }
