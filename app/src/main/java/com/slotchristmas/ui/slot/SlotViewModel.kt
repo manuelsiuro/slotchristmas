@@ -1,5 +1,6 @@
 package com.slotchristmas.ui.slot
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.slotchristmas.audio.AudioManager
@@ -16,6 +17,8 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+
+private const val TAG = "SlotChristmas"
 
 class SlotViewModel(
     private val participantRepository: ParticipantRepository,
@@ -54,6 +57,9 @@ class SlotViewModel(
         if (currentState.isSpinning || currentState.activeReceivers.isEmpty()) return
 
         viewModelScope.launch {
+            // Play random button click sound
+            audioManager.playRandomButtonClick()
+
             // Generate random results
             val chooser = currentState.allParticipants.random()
             val receiver = currentState.activeReceivers.random()
@@ -81,11 +87,13 @@ class SlotViewModel(
             delay(2300)
             _uiState.update { it.copy(spinPhase = SpinPhase.REEL1_STOPPED) }
             audioManager.playSfx(SoundEffect.REEL_STOP)
+            Log.d(TAG, "Reel 1 (GIVES) stopped - Giver: ${chooser.name}")
 
             // Reel 2 stops 500ms later
             delay(500)
             _uiState.update { it.copy(spinPhase = SpinPhase.REEL2_STOPPED) }
             audioManager.playSfx(SoundEffect.REEL_STOP)
+            Log.d(TAG, "Reel 2 (RECEIVES) stopped - Receiver: ${receiver.name}")
 
             // Reel 3 stops 500ms later
             delay(500)
@@ -101,6 +109,7 @@ class SlotViewModel(
                 giftCount = giftCount,
                 festiveMessage = festiveMessage
             )
+            Log.d(TAG, "Last Result: ${chooser.name} gives ${giftCount.value} gift(s) to ${receiver.name}")
 
             // Check for jackpot
             if (giftCount.isJackpot) {
@@ -117,6 +126,7 @@ class SlotViewModel(
                     )
                 } else participant
             }.filter { it.canReceiveGifts }
+            Log.d(TAG, "Receivers list after spin: ${updatedReceivers.map { it.name }}")
 
             // Update final state
             _uiState.update { state ->
@@ -141,6 +151,7 @@ class SlotViewModel(
     fun removeReceiver(participantId: String) {
         _uiState.update { state ->
             val updatedReceivers = state.activeReceivers.filter { it.id != participantId }
+            Log.d(TAG, "Receivers list changed (manual removal): ${updatedReceivers.map { it.name }}")
             state.copy(
                 activeReceivers = updatedReceivers,
                 isGameOver = updatedReceivers.isEmpty()

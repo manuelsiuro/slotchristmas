@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
@@ -51,7 +52,7 @@ fun SlotScreen(
             Column(
                 horizontalAlignment = Alignment.CenterHorizontally,
                 modifier = Modifier
-                    .width(180.dp)
+                    .weight(0.25f)
                     .padding(end = 8.dp)
             ) {
                 ReceiverPanel(
@@ -93,12 +94,12 @@ fun SlotScreen(
             Column(
                 horizontalAlignment = Alignment.CenterHorizontally,
                 modifier = Modifier
-                    .width(180.dp)
+                    .weight(0.25f)
                     .padding(start = 8.dp)
             ) {
                 ResultDisplay(
                     result = uiState.lastResult,
-                    modifier = Modifier.weight(1f).width(180.dp)
+                    modifier = Modifier.fillMaxWidth()
                 )
 
                 Spacer(modifier = Modifier.height(16.dp))

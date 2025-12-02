@@ -15,6 +15,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -40,11 +41,14 @@ fun SlotReel(
     // State for the currently displayed item during spinning
     var displayedItem by remember { mutableStateOf(items.firstOrNull()) }
 
+    // Keep reference to latest items list for use in coroutine
+    val currentItems by rememberUpdatedState(items)
+
     // Rapid cycling effect when spinning
     LaunchedEffect(isSpinning) {
-        if (isSpinning && items.isNotEmpty()) {
-            while (true) {
-                displayedItem = items.random()
+        if (isSpinning) {
+            while (currentItems.isNotEmpty()) {
+                displayedItem = currentItems.random()
                 delay(80) // ~12 FPS cycling speed
             }
         }

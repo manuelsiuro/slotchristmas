@@ -87,7 +87,56 @@ private fun ReceiverItem(
     onRemove: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    Row(
+    Column(
+        modifier = modifier.fillMaxWidth(),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+
+        Row(
+            modifier = Modifier.fillMaxWidth().padding(4.dp),
+            horizontalArrangement = Arrangement.Center,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            CircularParticipantImage(
+                participant = participant,
+                size = 36.dp,
+                borderWidth = 2.dp
+            )
+            Spacer(modifier = Modifier.width(8.dp))
+
+            // Remove button
+            Box(
+                modifier = Modifier
+                    .size(20.dp)
+                    .clip(CircleShape)
+                    .background(ChristmasRed.copy(alpha = 0.8f))
+                    .clickable(onClick = onRemove),
+                contentAlignment = Alignment.Center
+            ) {
+                Text(
+                    text = "×",
+                    color = Color.White,
+                    fontSize = 14.sp,
+                    fontWeight = FontWeight.Bold,
+                    textAlign = TextAlign.Center
+                )
+            }
+        }
+
+
+        Text(
+            text = participant.name,
+            color = TextPrimary,
+            fontSize = 11.sp,
+            fontWeight = FontWeight.Medium,
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis
+        )
+
+
+    }
+
+    /*Row(
         modifier = modifier
             .fillMaxWidth()
             .clip(RoundedCornerShape(8.dp))
@@ -95,11 +144,7 @@ private fun ReceiverItem(
             .padding(6.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        CircularParticipantImage(
-            participant = participant,
-            size = 36.dp,
-            borderWidth = 2.dp
-        )
+
 
         Spacer(modifier = Modifier.width(6.dp))
 
@@ -136,5 +181,5 @@ private fun ReceiverItem(
                 textAlign = TextAlign.Center
             )
         }
-    }
+    }*/
 }

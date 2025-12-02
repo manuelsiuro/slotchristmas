@@ -4,6 +4,7 @@ import android.content.Context
 import android.media.AudioAttributes
 import android.media.MediaPlayer
 import android.media.SoundPool
+import com.slotchristmas.R
 import com.slotchristmas.config.AssetConfig
 
 class AudioManager(private val context: Context) {
@@ -16,6 +17,19 @@ class AudioManager(private val context: Context) {
     private var musicVolume = 0.7f
     private var sfxVolume = 1.0f
     private var isInitialized = false
+
+    // Button click sound variants for random selection
+    private val buttonClickResIds = listOf(
+        R.raw.sfx_button_click,
+        R.raw.sfx_button_click_1,
+        R.raw.sfx_button_click_2,
+        R.raw.sfx_button_click_3,
+        R.raw.sfx_button_click_4,
+        R.raw.sfx_button_click_5,
+        R.raw.sfx_button_click_6,
+        R.raw.sfx_button_click_7
+    )
+    private val buttonClickSoundIds = mutableListOf<Int>()
 
     fun initialize() {
         if (isInitialized) return
@@ -38,6 +52,16 @@ class AudioManager(private val context: Context) {
                     soundIds[effect] = pool.load(context, effect.resId, 1)
                 } catch (e: Exception) {
                     // Sound file might not exist yet (placeholder)
+                }
+            }
+
+            // Preload button click sound variants
+            buttonClickSoundIds.clear()
+            buttonClickResIds.forEach { resId ->
+                try {
+                    buttonClickSoundIds.add(pool.load(context, resId, 1))
+                } catch (e: Exception) {
+                    // Sound file might not exist
                 }
             }
         }
@@ -104,6 +128,13 @@ class AudioManager(private val context: Context) {
                 activeStreams[effect] = streamId
             }
         }
+    }
+
+    fun playRandomButtonClick() {
+        if (isMuted || buttonClickSoundIds.isEmpty()) return
+
+        val soundId = buttonClickSoundIds.random()
+        soundPool?.play(soundId, sfxVolume, sfxVolume, 1, 0, 1.0f)
     }
 
     fun stopSfx(effect: SoundEffect) {

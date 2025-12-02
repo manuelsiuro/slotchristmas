@@ -6,7 +6,7 @@ data class Participant(
     val id: String,
     val name: String,
     @DrawableRes val photoResId: Int,
-    val remainingGiftsToReceive: Int = 4
+    val remainingGiftsToReceive: Int = 40
 ) {
     val canReceiveGifts: Boolean
         get() = remainingGiftsToReceive > 0
