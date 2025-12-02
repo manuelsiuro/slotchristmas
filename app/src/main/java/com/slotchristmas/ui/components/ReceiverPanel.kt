@@ -41,7 +41,7 @@ import com.slotchristmas.ui.theme.TextPrimary
 @Composable
 fun ReceiverPanel(
     receivers: List<Participant>,
-    onRemove: (String) -> Unit,
+    onRequestRemove: (Participant) -> Unit,
     modifier: Modifier = Modifier
 ) {
     Column(
@@ -86,7 +86,7 @@ fun ReceiverPanel(
             items(receivers, key = { it.id }) { participant ->
                 ReceiverItem(
                     participant = participant,
-                    onRemove = { onRemove(participant.id) }
+                    onRemove = { onRequestRemove(participant) }
                 )
             }
         }

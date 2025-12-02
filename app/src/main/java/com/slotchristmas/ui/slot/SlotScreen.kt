@@ -13,10 +13,15 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.slotchristmas.domain.model.Participant
 import com.slotchristmas.ui.components.AnimatedBackground
+import com.slotchristmas.ui.components.ConfirmRemovalDialog
 import com.slotchristmas.ui.components.FestiveMessage
 import com.slotchristmas.ui.components.GameOverOverlay
 import com.slotchristmas.ui.components.ReceiverPanel
@@ -32,6 +37,9 @@ fun SlotScreen(
     modifier: Modifier = Modifier
 ) {
     val uiState by viewModel.uiState.collectAsState()
+
+    // State for removal confirmation dialog
+    var participantToRemove by remember { mutableStateOf<Participant?>(null) }
 
     Box(modifier = modifier.fillMaxSize()) {
         // Layer 1: Animated background
@@ -57,7 +65,7 @@ fun SlotScreen(
             ) {
                 ReceiverPanel(
                     receivers = uiState.activeReceivers,
-                    onRemove = viewModel::removeReceiver,
+                    onRequestRemove = { participantToRemove = it },
                     modifier = Modifier.weight(1f)
                 )
 
@@ -122,6 +130,18 @@ fun SlotScreen(
         // Layer 5: Game over overlay
         if (uiState.isGameOver) {
             GameOverOverlay(onReset = viewModel::resetGame)
+        }
+
+        // Layer 6: Removal confirmation dialog
+        participantToRemove?.let { participant ->
+            ConfirmRemovalDialog(
+                participant = participant,
+                onConfirm = {
+                    viewModel.removeReceiver(participant.id)
+                    participantToRemove = null
+                },
+                onDismiss = { participantToRemove = null }
+            )
         }
     }
 }
