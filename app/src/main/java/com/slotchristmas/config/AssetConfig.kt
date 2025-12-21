@@ -9,28 +9,13 @@ object AssetConfig {
     @RawRes
     val BACKGROUND_MUSIC = R.raw.christmas_music
 
-    // Backgrounds (rotate randomly)
-    val BACKGROUNDS: List<Int> = listOf(
-        R.drawable.bg_christmas_6,
-        R.drawable.bg_christmas_7,
-        R.drawable.bg_christmas_8,
-        R.drawable.bg_christmas_9,
-        R.drawable.bg_christmas_10
-                /*,
-        R.drawable.bg_christmas_1,
-        R.drawable.bg_christmas_2,
-        R.drawable.bg_christmas_3,
-        R.drawable.bg_christmas_4,
-        R.drawable.bg_christmas_5*/
-    )
+    // Static background (single image, no rotation)
+    val BACKGROUNDS: List<Int> = listOf(R.drawable.bg_christmas_0)
 
-    // Background change interval in milliseconds
+    // Background change interval in milliseconds (unused with static bg)
     const val BACKGROUND_CHANGE_INTERVAL_MS = 30_000L
 
-    fun randomBackground(): Int = BACKGROUNDS.random()
+    fun randomBackground(): Int = R.drawable.bg_christmas_0
 
-    fun nextBackground(current: Int): Int {
-        val filtered = BACKGROUNDS.filter { it != current }
-        return if (filtered.isNotEmpty()) filtered.random() else BACKGROUNDS.random()
-    }
+    fun nextBackground(current: Int): Int = R.drawable.bg_christmas_0
 }

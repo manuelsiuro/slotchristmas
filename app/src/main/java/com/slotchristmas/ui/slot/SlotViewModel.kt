@@ -156,8 +156,8 @@ class SlotViewModel(
             )
             Log.d(TAG, "Last Result: ${chooser.name} gives ${giftCount.value} gift(s) to ${receiver.name}")
 
-            // Check for jackpot
-            if (giftCount.isJackpot) {
+            // Check for jackpot or Grinch (special celebrations)
+            if (giftCount.isJackpot || giftCount.isGrinch) {
                 _uiState.update { it.copy(spinPhase = SpinPhase.CELEBRATION) }
                 audioManager.playSfx(SoundEffect.JACKPOT)
                 delay(2000) // Celebration duration

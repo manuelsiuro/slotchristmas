@@ -113,8 +113,15 @@ fun ResultDisplay(
 
                     // Gift count
                     Text(
-                        text = "${spinResult.giftCount.value} Cadeau${if (spinResult.giftCount.value > 1) "x" else ""}",
-                        color = if (spinResult.giftCount.isJackpot) ChristmasGold else ChristmasGreen,
+                        text = if (spinResult.giftCount.isGrinch)
+                            "Tout le monde donne!"
+                        else
+                            "${spinResult.giftCount.value} Cadeau${if (spinResult.giftCount.value > 1) "x" else ""}",
+                        color = when {
+                            spinResult.giftCount.isGrinch -> ChristmasGreen
+                            spinResult.giftCount.isJackpot -> ChristmasGold
+                            else -> ChristmasGreen
+                        },
                         fontSize = 16.sp,
                         fontWeight = FontWeight.Bold
                     )
@@ -155,6 +162,16 @@ fun ResultDisplay(
                         Text(
                             text = "JACKPOT!",
                             color = ChristmasGold,
+                            fontSize = 14.sp,
+                            fontWeight = FontWeight.Bold
+                        )
+                    }
+
+                    if (spinResult.giftCount.isGrinch) {
+                        Spacer(modifier = Modifier.height(4.dp))
+                        Text(
+                            text = "GRINCH!",
+                            color = ChristmasGreen,
                             fontSize = 14.sp,
                             fontWeight = FontWeight.Bold
                         )

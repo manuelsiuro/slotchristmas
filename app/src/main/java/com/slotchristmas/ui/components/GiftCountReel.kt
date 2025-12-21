@@ -1,14 +1,13 @@
 package com.slotchristmas.ui.components
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -20,18 +19,17 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Brush
-import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.slotchristmas.R
 import com.slotchristmas.domain.model.GiftCount
 import com.slotchristmas.ui.components.effects.SelectionFrame
 import com.slotchristmas.ui.components.reel.ReelConfig
 import com.slotchristmas.ui.theme.ChristmasGold
-import com.slotchristmas.ui.theme.ChristmasGreen
-import com.slotchristmas.ui.theme.ChristmasRed
 import com.slotchristmas.ui.theme.ReelBackground
 import kotlinx.coroutines.delay
 
@@ -99,37 +97,29 @@ fun GiftCountReel(
     }
 }
 
+private fun GiftCount.toDrawableRes(): Int = when (this) {
+    GiftCount.ONE -> R.drawable.cadeaux_1
+    GiftCount.TWO -> R.drawable.cadeaux_2
+    GiftCount.THREE -> R.drawable.cadeaux_3
+    GiftCount.FOUR -> R.drawable.cadeaux_4
+    GiftCount.GRINCH -> R.drawable.grinch
+}
+
 @Composable
 private fun GiftCountItem(
     giftCount: GiftCount,
     size: Dp,
     modifier: Modifier = Modifier
 ) {
-    val backgroundColor = if (giftCount.isJackpot) {
-        Brush.radialGradient(
-            colors = listOf(ChristmasGold, ChristmasRed)
-        )
-    } else {
-        Brush.radialGradient(
-            colors = listOf(ChristmasGreen, ChristmasGreen.copy(alpha = 0.7f))
-        )
-    }
-
-    val borderColor = if (giftCount.isJackpot) ChristmasGold else ChristmasGold.copy(alpha = 0.7f)
-
     Box(
-        modifier = modifier
-            .size(size)
-            .clip(CircleShape)
-            .background(backgroundColor)
-            .border(3.dp, borderColor, CircleShape),
+        modifier = modifier.size(size),
         contentAlignment = Alignment.Center
     ) {
-        Text(
-            text = giftCount.value.toString(),
-            color = Color.White,
-            fontSize = (size.value * 0.5f).sp,
-            fontWeight = FontWeight.Bold
+        Image(
+            painter = painterResource(id = giftCount.toDrawableRes()),
+            contentDescription = "${giftCount.value} cadeaux",
+            modifier = Modifier.size(size),
+            contentScale = ContentScale.Fit
         )
     }
 }

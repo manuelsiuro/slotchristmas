@@ -28,6 +28,9 @@ fun ReelStrip(
     val reel2Spinning = uiState.spinPhase in listOf(SpinPhase.SPINNING, SpinPhase.REEL1_STOPPED)
     val reel3Spinning = uiState.spinPhase in listOf(SpinPhase.SPINNING, SpinPhase.REEL1_STOPPED, SpinPhase.REEL2_STOPPED)
 
+    // Check if Grinch was rolled - show Grinch in all reels when stopped
+    val isGrinchResult = uiState.selectedGiftCount?.isGrinch == true
+
     Box(
         modifier = modifier
             .candyCaneBorder(
@@ -46,20 +49,22 @@ fun ReelStrip(
             horizontalArrangement = Arrangement.spacedBy(16.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            // Reel 1: Chooser
+            // Reel 1: Chooser (shows Grinch when Grinch is rolled)
             SlotReel(
                 items = uiState.allParticipants,
                 isSpinning = reel1Spinning,
                 result = uiState.selectedChooser,
-                label = "Qui ?"
+                label = "Qui ?",
+                showGrinch = isGrinchResult
             )
 
-            // Reel 2: Receiver
+            // Reel 2: Receiver (shows Grinch when Grinch is rolled)
             SlotReel(
                 items = uiState.activeReceivers,
                 isSpinning = reel2Spinning,
                 result = uiState.selectedReceiver,
-                label = "Pour qui ?"
+                label = "Pour qui ?",
+                showGrinch = isGrinchResult
             )
 
             // Reel 3: Gift Count

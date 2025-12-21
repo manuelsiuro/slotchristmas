@@ -1,7 +1,7 @@
 package com.slotchristmas.ui.components
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -23,10 +23,13 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shadow
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.slotchristmas.R
 import com.slotchristmas.domain.model.Participant
 import com.slotchristmas.ui.components.effects.SelectionFrame
 import com.slotchristmas.ui.components.reel.ReelConfig
@@ -41,7 +44,8 @@ fun SlotReel(
     isSpinning: Boolean,
     result: Participant?,
     label: String,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    showGrinch: Boolean = false
 ) {
     // State for the currently displayed item during spinning
     var displayedItem by remember { mutableStateOf(items.firstOrNull()) }
@@ -94,12 +98,23 @@ fun SlotReel(
                 /*.border(3.dp, ChristmasGold.copy(alpha = 0.5f), RoundedCornerShape(16.dp))*/,
             contentAlignment = Alignment.Center
         ) {
-            // Display single centered item
-            itemToShow?.let { participant ->
-                CircularParticipantImage(
-                    participant = participant,
-                    size = ReelConfig.ITEM_CONTENT_SIZE
+            // Display single centered item (Grinch or participant)
+            if (showGrinch && !isSpinning) {
+                // Show Grinch image when Grinch is rolled
+                Image(
+                    painter = painterResource(id = R.drawable.grinch),
+                    contentDescription = "Grinch",
+                    modifier = Modifier.size(ReelConfig.ITEM_CONTENT_SIZE),
+                    contentScale = ContentScale.Fit
                 )
+            } else {
+                // Normal participant display
+                itemToShow?.let { participant ->
+                    CircularParticipantImage(
+                        participant = participant,
+                        size = ReelConfig.ITEM_CONTENT_SIZE
+                    )
+                }
             }
 
             // Selection frame overlay
