@@ -16,7 +16,7 @@ class BlagueApiService {
         }
     }
 
-    private val modes = listOf("global", "dark", "dev", "limit", "beauf", "blondes")
+    private val modes = listOf("global", "limit", "blondes")//"dark", "dev", "beauf",
 
     suspend fun getRandomBlague(): BlagueResponse {
         val mode = modes.random()
