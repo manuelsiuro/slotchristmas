@@ -176,6 +176,7 @@ fun ResultDisplay(
                             fontWeight = FontWeight.Bold
                         )
                     }
+                    Spacer(modifier = Modifier.height(8.dp))
                 }
             }
         }
