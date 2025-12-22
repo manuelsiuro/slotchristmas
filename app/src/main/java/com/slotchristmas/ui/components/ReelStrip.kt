@@ -1,26 +1,26 @@
 package com.slotchristmas.ui.components
 
-import androidx.compose.foundation.background
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
-import com.slotchristmas.ui.components.effects.candyCaneBorder
+import com.slotchristmas.R
 import com.slotchristmas.ui.slot.SlotUiState
 import com.slotchristmas.ui.slot.SpinPhase
-import com.slotchristmas.ui.theme.BackgroundOverlay
 
 @Composable
 fun ReelStrip(
     uiState: SlotUiState,
+    onSpin: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     // Determine which reels are still spinning based on phase
@@ -32,21 +32,23 @@ fun ReelStrip(
     val isGrinchResult = uiState.selectedGiftCount?.isGrinch == true
 
     Box(
-        modifier = modifier
-            .candyCaneBorder(
-                borderWidth = 16.dp,
-                cornerRadius = 24.dp,
-                stripeWidth = 24.dp,
-                animationDurationMs = 3000
-            )
-            .padding(16.dp)
-            .clip(RoundedCornerShape(8.dp))
-            .background(BackgroundOverlay),
+        modifier = modifier,
         contentAlignment = Alignment.Center
     ) {
+        // Background frame image
+        Image(
+            painter = painterResource(id = R.drawable.reel_strip_background),
+            contentDescription = "Slot machine frame",
+            modifier = Modifier.fillMaxWidth(),
+            contentScale = ContentScale.FillWidth
+        )
+
+        // Reels positioned in center content area
         Row(
-            modifier = Modifier.padding(16.dp),
-            horizontalArrangement = Arrangement.spacedBy(16.dp),
+            modifier = Modifier
+                .padding(top = 60.dp, bottom = 50.dp)
+                .padding(horizontal = 24.dp),
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
             // Reel 1: Chooser (shows Grinch when Grinch is rolled)
@@ -54,7 +56,7 @@ fun ReelStrip(
                 items = uiState.allParticipants,
                 isSpinning = reel1Spinning,
                 result = uiState.selectedChooser,
-                label = "Qui ?",
+                showLabel = false,
                 showGrinch = isGrinchResult
             )
 
@@ -63,15 +65,27 @@ fun ReelStrip(
                 items = uiState.activeReceivers,
                 isSpinning = reel2Spinning,
                 result = uiState.selectedReceiver,
-                label = "Pour qui ?",
+                showLabel = false,
                 showGrinch = isGrinchResult
             )
 
             // Reel 3: Gift Count
             GiftCountReel(
                 isSpinning = reel3Spinning,
-                result = uiState.selectedGiftCount
+                result = uiState.selectedGiftCount,
+                showLabel = false
             )
         }
+
+        // SpinButton overlaid on yellow circle at bottom
+        SpinButton(
+            onClick = onSpin,
+            enabled = !uiState.isSpinning && !uiState.isGameOver && uiState.activeReceivers.isNotEmpty(),
+            isSpinning = uiState.isSpinning,
+            size = 80.dp,
+            modifier = Modifier
+                .align(Alignment.BottomCenter)
+                .offset(y = 8.dp)
+        )
     }
 }

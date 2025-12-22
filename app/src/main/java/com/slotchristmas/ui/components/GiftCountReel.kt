@@ -27,7 +27,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.slotchristmas.R
 import com.slotchristmas.domain.model.GiftCount
-import com.slotchristmas.ui.components.effects.SelectionFrame
 import com.slotchristmas.ui.components.reel.ReelConfig
 import com.slotchristmas.ui.theme.ChristmasGold
 import com.slotchristmas.ui.theme.ReelBackground
@@ -37,7 +36,8 @@ import kotlinx.coroutines.delay
 fun GiftCountReel(
     isSpinning: Boolean,
     result: GiftCount?,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    showLabel: Boolean = true
 ) {
     val giftCounts = GiftCount.entries
 
@@ -61,15 +61,17 @@ fun GiftCountReel(
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = modifier
     ) {
-        // Label
-        Text(
-            text = "Combien ?",
-            color = ChristmasGold,
-            fontSize = 14.sp,
-            fontWeight = FontWeight.Bold
-        )
+        // Label (conditionally shown)
+        if (showLabel) {
+            Text(
+                text = "Combien ?",
+                color = ChristmasGold,
+                fontSize = 14.sp,
+                fontWeight = FontWeight.Bold
+            )
 
-        Spacer(modifier = Modifier.height(8.dp))
+            Spacer(modifier = Modifier.height(8.dp))
+        }
 
         // Reel container
         Box(
@@ -88,11 +90,6 @@ fun GiftCountReel(
                     size = ReelConfig.ITEM_CONTENT_SIZE
                 )
             }
-
-            // Selection frame overlay
-            SelectionFrame(
-                modifier = Modifier.size(ReelConfig.SELECTION_FRAME_SIZE)
-            )
         }
     }
 }

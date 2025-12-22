@@ -27,7 +27,6 @@ import com.slotchristmas.ui.components.GameOverOverlay
 import com.slotchristmas.ui.components.ReceiverPanel
 import com.slotchristmas.ui.components.ReelStrip
 import com.slotchristmas.ui.components.ResultDisplay
-import com.slotchristmas.ui.components.SpinButton
 import com.slotchristmas.ui.components.VolumeControl
 import com.slotchristmas.ui.components.effects.JackpotCelebration
 
@@ -56,7 +55,7 @@ fun SlotScreen(
             horizontalArrangement = Arrangement.SpaceEvenly,
             verticalAlignment = Alignment.CenterVertically
         ) {
-            // Left panel: Receiver management + Spin button
+            // Left panel: Receiver management
             Column(
                 horizontalAlignment = Alignment.CenterHorizontally,
                 modifier = Modifier
@@ -68,16 +67,6 @@ fun SlotScreen(
                     onRequestRemove = { participantToRemove = it },
                     modifier = Modifier.weight(1f)
                 )
-
-                Spacer(modifier = Modifier.height(16.dp))
-
-                // Spin button (larger, in left column)
-                SpinButton(
-                    onClick = viewModel::spin,
-                    enabled = !uiState.isSpinning && !uiState.isGameOver && uiState.activeReceivers.isNotEmpty(),
-                    isSpinning = uiState.isSpinning,
-                    size = 100.dp
-                )
             }
 
             // Center: Slot machine + Festive message
@@ -85,9 +74,10 @@ fun SlotScreen(
                 horizontalAlignment = Alignment.CenterHorizontally,
                 modifier = Modifier.weight(1f)
             ) {
-                // Slot machine reels
+                // Slot machine reels with integrated spin button
                 ReelStrip(
-                    uiState = uiState
+                    uiState = uiState,
+                    onSpin = viewModel::spin
                 )
 
                 //Spacer(modifier = Modifier.height(12.dp))

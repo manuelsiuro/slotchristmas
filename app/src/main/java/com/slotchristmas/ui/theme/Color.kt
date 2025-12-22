@@ -23,7 +23,9 @@ val ParticleGreen = Color(0xFF00FF00)
 val ParticleGold = Color(0xFFFFD700)
 val ParticleWhite = Color(0xFFFFFFFF)
 
-// Button Colors
-val SpinButtonGradientStart = Color(0xFFFF6B6B)
-val SpinButtonGradientEnd = Color(0xFFC41E3A)
+// Button Colors - Polished gold metallic gradient (3-color for depth)
+val SpinButtonGradientTop = Color(0xFFF5E6A3)     // Bright gold highlight (top)
+val SpinButtonGradientMiddle = Color(0xFFD4A930)  // Rich gold (mid-tone)
+val SpinButtonGradientBottom = Color(0xFF9A7B0A)  // Deep bronze shadow (bottom)
 val SpinButtonDisabled = Color(0xFF666666)
+val SpinButtonBorder = Color(0xFF631D34)  // Burgundy/maroon to match frame

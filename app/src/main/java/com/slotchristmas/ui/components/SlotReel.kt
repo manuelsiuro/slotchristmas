@@ -31,7 +31,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.slotchristmas.R
 import com.slotchristmas.domain.model.Participant
-import com.slotchristmas.ui.components.effects.SelectionFrame
 import com.slotchristmas.ui.components.reel.ReelConfig
 import com.slotchristmas.ui.theme.ChristmasGold
 import com.slotchristmas.ui.theme.LobsterFont
@@ -43,9 +42,10 @@ fun SlotReel(
     items: List<Participant>,
     isSpinning: Boolean,
     result: Participant?,
-    label: String,
+    label: String = "",
     modifier: Modifier = Modifier,
-    showGrinch: Boolean = false
+    showGrinch: Boolean = false,
+    showLabel: Boolean = true
 ) {
     // State for the currently displayed item during spinning
     var displayedItem by remember { mutableStateOf(items.firstOrNull()) }
@@ -70,23 +70,25 @@ fun SlotReel(
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = modifier
     ) {
-        // Label
-        Text(
-            text = label,
-            color = ChristmasGold,
-            fontSize = 14.sp,
-            fontWeight = FontWeight.Bold,
-            fontFamily = LobsterFont,
-            style = TextStyle(
-                shadow = Shadow(
-                    color = Color.Black.copy(alpha = 0.6f),
-                    offset = Offset(2f, 2f),
-                    blurRadius = 4f
+        // Label (conditionally shown)
+        if (showLabel && label.isNotEmpty()) {
+            Text(
+                text = label,
+                color = ChristmasGold,
+                fontSize = 14.sp,
+                fontWeight = FontWeight.Bold,
+                fontFamily = LobsterFont,
+                style = TextStyle(
+                    shadow = Shadow(
+                        color = Color.Black.copy(alpha = 0.6f),
+                        offset = Offset(2f, 2f),
+                        blurRadius = 4f
+                    )
                 )
             )
-        )
 
-        Spacer(modifier = Modifier.height(8.dp))
+            Spacer(modifier = Modifier.height(8.dp))
+        }
 
         // Reel container
         Box(
@@ -116,11 +118,6 @@ fun SlotReel(
                     )
                 }
             }
-
-            // Selection frame overlay
-            SelectionFrame(
-                modifier = Modifier.size(ReelConfig.SELECTION_FRAME_SIZE)
-            )
         }
     }
 }
